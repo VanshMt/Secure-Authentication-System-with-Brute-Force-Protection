@@ -70,7 +70,17 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+
+  failedAttempts: {
+  type: Number,
+  default: 0
+},
+lockUntil: {
+  type: Date,
+  default: null
+}
+
 });
 
 module.exports = mongoose.model("User", UserSchema);

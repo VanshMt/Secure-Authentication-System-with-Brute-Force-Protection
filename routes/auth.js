@@ -133,6 +133,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const authMiddleware = require("../middleware/authmiddleware");
+const sendEmail = require("../utils/sendEmail");
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -164,23 +165,84 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     console.log(`Login attempt: ${email}`);
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       console.log(`Failed login: ${email}`);
+//       return res.status(400).json({ msg: "Invalid credentials" });
+//     }
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       console.log(`Failed login: ${email}`);
+//       return res.status(400).json({ msg: "Invalid credentials" });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     res.json({ token });
+
+//   } catch (err) {
+//     res.status(500).json({ msg: "Login error" });
+//   }
+// });
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(`Login attempt: ${email}`);
-
     const user = await User.findOne({ email });
+
     if (!user) {
-      console.log(`Failed login: ${email}`);
       return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    // 🚫 CHECK IF ACCOUNT LOCKED
+    if (user.lockUntil && user.lockUntil > Date.now()) {
+      return res.status(403).json({
+        msg: "Account locked. Try again later."
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+
+    // ❌ WRONG PASSWORD
     if (!isMatch) {
-      console.log(`Failed login: ${email}`);
-      return res.status(400).json({ msg: "Invalid credentials" });
+      user.failedAttempts += 1;
+
+      // 🔒 LOCK AFTER 5 ATTEMPTS
+      // if (user.failedAttempts >= 5) {
+      //   user.lockUntil = Date.now() + 5 * 60 * 1000; // 5 minutes
+      // }
+      if (user.failedAttempts >= 5) {
+  user.lockUntil = Date.now() + 5 * 60 * 1000;
+
+  // 🚨 SEND EMAIL ALERT
+  await sendEmail(
+    user.email,
+    "🚨 Security Alert: Account Locked",
+    "Your account has been locked due to multiple failed login attempts.\n\nIf this wasn't you, please reset your password immediately."
+  );
+}
+      await user.save();
+
+      return res.status(400).json({
+        msg: "Invalid credentials"
+      });
     }
+
+    // ✅ SUCCESS LOGIN → RESET
+    user.failedAttempts = 0;
+    user.lockUntil = null;
+    await user.save();
 
     const token = jwt.sign(
       { id: user._id },
@@ -191,6 +253,7 @@ router.post("/login", async (req, res) => {
     res.json({ token });
 
   } catch (err) {
+    console.log("LOGIN ERROR 👉", err);
     res.status(500).json({ msg: "Login error" });
   }
 });

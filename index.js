@@ -51,7 +51,7 @@ app.use(express.json());
 // RATE LIMITER (Brute force protection)
 const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 5, // max 5 attempts
+  max: 50, // max 5 attempts
   message: "Too many login attempts. Try again later."
 });
 
