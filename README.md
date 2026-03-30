@@ -54,13 +54,25 @@ GET /auth/dashboard
 npm install
 node index.js
 
-## 📷 Demo Screenshots   ✅ ← ADD HERE
+## 📌 How to Run
+
+```bash
+npm install
+node index.js
+```
+
+---
+
+## 📷 Demo Screenshots
 
 ### 🧾 User Registration
-![Register](secure-auth-system/screenshots/User-registration.png)
+
+![Register](./screenshots/User-registration.png)
 
 ### 🔐 User Login (JWT Token)
-![Login](secure-auth-system/screenshots/User-Login.png)
+
+![Login](./screenshots/User-Login.png)
 
 ### 🛡️ Brute Force Protection
-![Rate Limit](secure-auth-system/screenshots/Rate-Limiter.png)
+
+![Rate Limit](./screenshots/Rate-Limiter.png)
