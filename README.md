@@ -486,15 +486,6 @@ Return JWT tokens
 
 ---
 
-### 🔹Test Cases
-Scenario	Expected Result
-Same device + IP	Low risk
-New device	Medium risk
-New country	High risk
-Impossible travel	🚨 Alert triggered
-
----
-
 ## 🚨 Advanced Security Highlights
 
 - 🧠 Risk-Based Authentication (like Google)
@@ -554,7 +545,7 @@ secure-auth-system/
 ├── package.json
 ├── .gitignore
 
-----
+---
 
 ### ⚙️ Setup Instructions
 ## 1️⃣ Clone Repository
@@ -574,7 +565,7 @@ EMAIL_PASS=your_password
 ## 4️⃣ Run Server
 node index.js
 
-----
+---
  
 #### 🔐 Security Notes
 Passwords are hashed using bcrypt
@@ -598,7 +589,7 @@ Global logout (all devices)
 AI-based anomaly detection
 Device fingerprinting
 
-----
+---
 
 #### 🏆 Resume Highlight
 
