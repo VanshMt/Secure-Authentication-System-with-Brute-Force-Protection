@@ -466,21 +466,23 @@ Return JWT tokens
 
 ---
 
-### 🛡️ Security
+#### 🛡️ Security
 
-|   Method |     Endpoint	     |          Description         |
-|----------|---------------------|------------------------------|
-|   GET	   | /auth/sessions 	 |   Get active sessions        |
-|   POST   | /auth/logout-device |	Logout from specific device |
+| Method | Endpoint            | Description                 |
+|--------|--------------------|-----------------------------|
+| GET    | /auth/sessions     | Get active sessions         |
+| POST   | /auth/logout-device| Logout from specific device |
 
 ---
 
-### 🧪 Testing (Thunder Client / Postman)
+#### 🧪 Test Cases
 
-🔹 Login Request
-POST http://localhost:3000/auth/login
-🔹 Add Header (for geo testing)
-x-forwarded-for: 8.8.8.8
+| Scenario            | Expected Result     |
+|---------------------|--------------------|
+| Same device + IP    | Low risk           |
+| New device          | Medium risk        |
+| New country         | High risk          |
+| Impossible travel   | 🚨 Alert triggered |
 
 ---
 
