@@ -463,7 +463,7 @@ Return JWT tokens
 | POST   | /auth/login    | Login user           |
 | POST   | /auth/refresh  | Refresh token        |
 | POST   | /auth/logout   | Logout user          |
-
+```
 ---
 
 #### 🛡️ Security
@@ -483,6 +483,7 @@ Return JWT tokens
 | New device          | Medium risk        |
 | New country         | High risk          |
 | Impossible travel   | 🚨 Alert triggered |
+
 
 ---
 
@@ -510,16 +511,17 @@ Return JWT tokens
 ---
 
 ## ⚙️ Tech Stack
-Node.js
-Express.js
-MongoDB (Mongoose)
-JWT (jsonwebtoken)
-bcrypt
-express-rate-limit
-Nodemailer
-IPinfo API
-crypto (for hashing tokens)
+- Node.js
+- Express.js
+- MongoDB (Mongoose)
+- JWT (jsonwebtoken)
+- bcrypt
+- express-rate-limit
+- Nodemailer
+- IPinfo API
+- crypto (for hashing tokens)
 
+---
 ---
 
 #### 📁 Project Structure
@@ -546,8 +548,10 @@ secure-auth-system/
 ├── .gitignore
 
 ---
+---
 
 ### ⚙️ Setup Instructions
+
 ## 1️⃣ Clone Repository
 git clone https://github.com/Vansh1320/Secure-Authentication-System-with-Brute-Force-Protection
 cd secure-auth-system
@@ -566,6 +570,7 @@ EMAIL_PASS=your_password
 node index.js
 
 ---
+---
  
 #### 🔐 Security Notes
 Passwords are hashed using bcrypt
@@ -574,6 +579,7 @@ Sensitive data is protected using environment variables
 System defends against brute-force and replay attacks
 
 ---
+---
 
 #### ⚠️ Limitations
 Geo-location accuracy depends on IP
@@ -581,7 +587,7 @@ Localhost testing may show "Unknown" location
 Requires email setup for alerts
 
 ---
-
+---
 #### 🚀 Future Improvements
 OTP verification for high-risk login
 Frontend dashboard (React)
