@@ -59,6 +59,7 @@
 
 // module.exports = mongoose.model("User", userSchema);
 
+const { verify } = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
@@ -73,13 +74,54 @@ const UserSchema = new mongoose.Schema({
   },
 
   failedAttempts: {
-  type: Number,
-  default: 0
+    type: Number,
+    default: 0
 },
-lockUntil: {
-  type: Date,
-  default: null
-}
+  lockUntil: {
+    type: Date,
+    default: null
+},
+  resetToken: {
+    type: String
+  },
+  resetTokenExpire: {
+    type: Date
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+
+  verifyToken: {
+    type: String
+  },
+  verifyTokenExpire: {
+    type: Date
+  },
+  refreshTokens: [{
+    tokenHash: String,
+    expiresAt: Date,
+  }],
+
+  sessions: [
+  {
+    tokenHash: String,
+    device: String,
+    ip: String,
+
+    location: {
+    ip: String,
+    country: String,
+    region: String,
+    },
+
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    expiresAt: Date
+  }],
+
 
 });
 

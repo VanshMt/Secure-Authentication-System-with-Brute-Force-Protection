@@ -53,9 +53,41 @@
 // };
 
 
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
+// const BlacklistToken = require("../models/BlacklistToken");
 
-module.exports = function (req, res, next) {
+// module.exports = async function (req, res, next) {
+//   const authHeader = req.header("Authorization");
+
+//   if (!authHeader) {
+//     return res.status(401).json({ msg: "No token, access denied" });
+//   }
+
+//   try {
+//     // 🔥 Extract token (remove "Bearer ")
+//     const token = authHeader.split(" ")[1];
+
+//     const verified = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = verified;
+
+//     next();
+//   } catch (err) {
+//     res.status(400).json({ msg: "Invalid token" });
+//   }
+
+// // Black List token
+//   const isBlacklisted = await BlacklistToken.findOne({ token });
+
+// if (isBlacklisted) {
+//   return res.status(401).json({ msg: "Token is invalid (logged out)" });
+// }
+
+// };
+
+const jwt = require("jsonwebtoken");
+const BlacklistToken = require("../models/BlacklistToken");
+
+module.exports = async function (req, res, next) {
   const authHeader = req.header("Authorization");
 
   if (!authHeader) {
@@ -63,13 +95,22 @@ module.exports = function (req, res, next) {
   }
 
   try {
-    // 🔥 Extract token (remove "Bearer ")
+    // Extract token
     const token = authHeader.split(" ")[1];
 
+    // 🔥 CHECK BLACKLIST FIRST
+    const isBlacklisted = await BlacklistToken.findOne({ token });
+
+    if (isBlacklisted) {
+      return res.status(401).json({ msg: "Token is invalid (logged out)" });
+    }
+
+    // Verify token
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
 
     next();
+
   } catch (err) {
     res.status(400).json({ msg: "Invalid token" });
   }

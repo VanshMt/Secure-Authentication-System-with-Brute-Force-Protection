@@ -45,8 +45,12 @@ const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
 
 const app = express();
-
+app.set("trust proxy", 1); // For rate limiter to work behind proxies
 app.use(express.json());
+
+// COOKIE PARSER (For refresh token in cookies)
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 // RATE LIMITER (Brute force protection)
 const loginLimiter = rateLimit({
@@ -76,3 +80,4 @@ app.get("/", (req, res) => {
 app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
+

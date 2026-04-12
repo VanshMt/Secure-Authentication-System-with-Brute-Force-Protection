@@ -1,3 +1,15 @@
+node_modules/
 .env
-node_modules
-Screenshot*.png
+
+# logs
+logs
+*.log
+
+# OS files
+.DS_Store
+
+# screenshots (optional)
+screenshots/
+
+# build
+dist/
