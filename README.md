@@ -369,63 +369,47 @@ In terminal:
 git add README.md
 git commit -m "Upgraded README with advanced security features"
 git push -->
+![Node.js](https://img.shields.io/badge/Node.js-18-green)
+![Express](https://img.shields.io/badge/Express.js-Backend-black)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
+![JWT](https://img.shields.io/badge/Auth-JWT-blue)
+![Security](https://img.shields.io/badge/Security-Advanced-red)
 
-# 🔐 Secure Authentication System with Risk-Based Security & Geo Tracking
+# 🔐 Secure Authentication System  
+### 🚀 Risk-Based Security • Geo Tracking • Session Management
 
-A production-grade authentication and security system built using Node.js, Express, and MongoDB.  
-This project goes beyond basic authentication by implementing **behavior-based security**, including geo-location tracking, risk scoring, and impossible travel detection — similar to modern systems used by Google and other large platforms.
+A production-grade backend authentication system with **advanced cybersecurity features** like geo-location tracking, risk-based login detection, and impossible travel analysis.
 
+---
 ---
 
 ## 🚀 Features
 
 ### 🔐 Authentication
-- User Registration with hashed passwords (bcrypt)
-- Secure Login System
-- JWT-based authentication (Access + Refresh Tokens)
-- Protected routes using middleware
+- JWT-based login system
+- Access + Refresh Tokens
+- Protected routes
+
+### 🛡️ Security
+- Brute-force protection
+- Account lockout
+- Rate limiting
+
+### 🌍 Geo Intelligence
+- IP → Location tracking
+- Country-based detection
+
+### 📱 Sessions
+- Multi-device tracking
+- Max 3 sessions
+- Device + IP storage
+
+### 🚨 Advanced Detection
+- Risk scoring system
+- Suspicious login alerts
+- Impossible travel detection ✈️
 
 ---
-
-### 🔁 Token System
-- Short-lived Access Tokens
-- Refresh Token Rotation
-- HTTP-only cookies
-- Secure token hashing (SHA-256)
-
----
-
-### 🛡️ Core Security Features
-- Brute-force protection (account lock after failed attempts)
-- Rate limiting (express-rate-limit)
-- Token blacklist (logout system)
-- Email alerts for suspicious activity
-- Password reset system
-- Email verification system
-
----
-
-### 🌍 Geo-Location Tracking
-- Converts IP → Country & Region (IPinfo API)
-- Stores location inside session
-- Used for anomaly detection
-- Included in email alerts
-
----
-
-### 📱 Session Management
-- Multiple device sessions
-- Max 3 active sessions
-- Oldest session auto-removed
-- Tracks:
-  - Device (user-agent)
-  - IP address
-  - Location
-  - Expiry
-
----
-
-### 🚨 Advanced Security (🔥 Highlight)
 
 #### 🧠 Risk-Based Authentication
 - Risk score calculated on login based on:
@@ -465,18 +449,20 @@ If high risk:
 Create session
    ↓
 Return JWT tokens
+```
+---
 
-----
+```md
+## 📡 API Endpoints
 
-###🔐 Authentication
+### 🔐 Authentication
 
-| Method |    Endpoint    |     Description       |
-|--------|----------------|-----------------------|
-| POST   | /auth/register | Register user         |
-| POST   | /auth/login    | Login user            |
-| POST   | /auth/refresh  | Refresh access token  |
-| POST   | /auth/logout   | Logout user           |
-
+| Method | Endpoint       |   Description        |
+|--------|----------------|----------------------|
+| POST   | /auth/register | Register user        |
+| POST   | /auth/login    | Login user           |
+| POST   | /auth/refresh  | Refresh token        |
+| POST   | /auth/logout   | Logout user          |
 
 -----
 
@@ -487,7 +473,7 @@ Return JWT tokens
 |   GET	   | /auth/sessions 	 |   Get active sessions        |
 |   POST   | /auth/logout-device |	Logout from specific device |
 
-----
+---
 
 ### 🧪 Testing (Thunder Client / Postman)
 
@@ -496,14 +482,24 @@ POST http://localhost:3000/auth/login
 🔹 Add Header (for geo testing)
 x-forwarded-for: 8.8.8.8
 
-----
+---
 
-####🔹 Test Cases
+### 🔹Test Cases
 Scenario	Expected Result
 Same device + IP	Low risk
 New device	Medium risk
 New country	High risk
 Impossible travel	🚨 Alert triggered
+
+---
+
+## 🚨 Advanced Security Highlights
+
+- 🧠 Risk-Based Authentication (like Google)
+- 🌍 Geo-location tracking per login
+- ✈️ Impossible travel detection
+- 📧 Smart alert system
+- 📱 Device & session tracking
 
 ---
 
@@ -520,7 +516,7 @@ Impossible travel	🚨 Alert triggered
 
 ---
 
-##⚙️ Tech Stack
+## ⚙️ Tech Stack
 Node.js
 Express.js
 MongoDB (Mongoose)
@@ -533,7 +529,7 @@ crypto (for hashing tokens)
 
 ---
 
-####📁 Project Structure
+#### 📁 Project Structure
 secure-auth-system/
 │
 ├── models/
@@ -558,36 +554,42 @@ secure-auth-system/
 
 ----
 
-###⚙️ Setup Instructions
-##1️⃣ Clone Repository
+### ⚙️ Setup Instructions
+## 1️⃣ Clone Repository
 git clone https://github.com/Vansh1320/Secure-Authentication-System-with-Brute-Force-Protection
 cd secure-auth-system
 
-##2️⃣ Install Dependencies
+## 2️⃣ Install Dependencies
 npm install
 
-##3️⃣ Create .env File
+## 3️⃣ Create .env File
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 IPINFO_TOKEN=your_token
 EMAIL_USER=your_email
 EMAIL_PASS=your_password
 
-##4️⃣ Run Server
+## 4️⃣ Run Server
 node index.js
 
 ----
  
-####🔐 Security Notes
+#### 🔐 Security Notes
 Passwords are hashed using bcrypt
 Tokens are securely generated and stored
 Sensitive data is protected using environment variables
 System defends against brute-force and replay attacks
-####⚠️ Limitations
+
+---
+
+#### ⚠️ Limitations
 Geo-location accuracy depends on IP
 Localhost testing may show "Unknown" location
 Requires email setup for alerts
-####🚀 Future Improvements
+
+---
+
+#### 🚀 Future Improvements
 OTP verification for high-risk login
 Frontend dashboard (React)
 Global logout (all devices)
@@ -596,14 +598,15 @@ Device fingerprinting
 
 ----
 
-####🏆 Resume Highlight
+#### 🏆 Resume Highlight
 
 Built a production-grade authentication system with Node.js, Express, and MongoDB implementing JWT authentication, brute-force protection, geo-location tracking, multi-device session management, and advanced risk-based login detection including impossible travel analysis.
 
+---
 
-###👨‍💻 Author
-
-Built by Vansh 🚀
+## 👨‍💻 Author
+ 
+Built by **Vansh** 🚀
 ---
 
 # 🏆 THIS README DOES:
