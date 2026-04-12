@@ -464,7 +464,7 @@ Return JWT tokens
 | POST   | /auth/refresh  | Refresh token        |
 | POST   | /auth/logout   | Logout user          |
 
------
+---
 
 ### 🛡️ Security
 
