@@ -481,6 +481,7 @@ Return JWT tokens
 -----
 
 ### 🛡️ Security
+
 |   Method |     Endpoint	     |          Description         |
 |----------|---------------------|------------------------------|
 |   GET	   | /auth/sessions 	 |   Get active sessions        |
@@ -489,6 +490,7 @@ Return JWT tokens
 ----
 
 ### 🧪 Testing (Thunder Client / Postman)
+
 🔹 Login Request
 POST http://localhost:3000/auth/login
 🔹 Add Header (for geo testing)
