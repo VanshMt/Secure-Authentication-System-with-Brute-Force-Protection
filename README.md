@@ -522,7 +522,7 @@ Return JWT tokens
 - crypto (for hashing tokens)
 
 ---
----
+
 
 #### 📁 Project Structure
 secure-auth-system/
@@ -548,52 +548,52 @@ secure-auth-system/
 ├── .gitignore
 
 ---
----
+
 
 ### ⚙️ Setup Instructions
 
 ## 1️⃣ Clone Repository
-git clone https://github.com/Vansh1320/Secure-Authentication-System-with-Brute-Force-Protection
-cd secure-auth-system
+- git clone https://github.com/Vansh1320/Secure-Authentication-System-with-Brute-Force-Protection
+- cd secure-auth-system
 
 ## 2️⃣ Install Dependencies
-npm install
+- npm install
 
 ## 3️⃣ Create .env File
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret
-IPINFO_TOKEN=your_token
-EMAIL_USER=your_email
-EMAIL_PASS=your_password
+- MONGO_URI=your_mongodb_uri
+- JWT_SECRET=your_secret
+- IPINFO_TOKEN=your_token
+- EMAIL_USER=your_email
+- EMAIL_PASS=your_password
 
 ## 4️⃣ Run Server
-node index.js
+- node index.js
 
 ---
----
+
  
 #### 🔐 Security Notes
-Passwords are hashed using bcrypt
-Tokens are securely generated and stored
-Sensitive data is protected using environment variables
-System defends against brute-force and replay attacks
+- Passwords are hashed using bcrypt
+- Tokens are securely generated and stored
+- Sensitive data is protected using environment variables
+- System defends against brute-force and replay attacks
 
 ---
----
+
 
 #### ⚠️ Limitations
-Geo-location accuracy depends on IP
-Localhost testing may show "Unknown" location
-Requires email setup for alerts
+- Geo-location accuracy depends on IP
+- Localhost testing may show "Unknown" location
+- Requires email setup for alerts
 
 ---
----
+
 #### 🚀 Future Improvements
-OTP verification for high-risk login
-Frontend dashboard (React)
-Global logout (all devices)
-AI-based anomaly detection
-Device fingerprinting
+- OTP verification for high-risk login
+- Frontend dashboard (React)
+- Global logout (all devices)
+- AI-based anomaly detection
+- Device fingerprinting
 
 ---
 
