@@ -54,7 +54,12 @@ const getLocationFromIP = async (ip) => {
     return location;
   } catch (error) {
     console.log("Geo error:", error.message);
-    return null;
+    // Return fallback location instead of null
+    return {
+      ip,
+      country: "Unknown",
+      region: "Unknown"
+    };
   }
 };
 

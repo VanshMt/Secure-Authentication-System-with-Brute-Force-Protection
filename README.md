@@ -369,7 +369,7 @@ In terminal:
 git add README.md
 git commit -m "Upgraded README with advanced security features"
 git push -->
-![Node.js](https://img.shields.io/badge/Node.js-18-green)
+<!-- ![Node.js](https://img.shields.io/badge/Node.js-18-green)
 ![Express](https://img.shields.io/badge/Express.js-Backend-black)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
 ![JWT](https://img.shields.io/badge/Auth-JWT-blue)
@@ -623,4 +623,379 @@ Built by **Vansh** 🚀
 ```bash
 git add README.md
 git commit -m "Added full professional README"
-git push
+git push -->
+
+
+# 🔐 Secure Authentication & Session Management Platform
+
+![Node.js](https://img.shields.io/badge/Node.js-Backend-green)
+![Express](https://img.shields.io/badge/Express.js-Framework-black)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
+![JWT](https://img.shields.io/badge/Auth-JWT-blue)
+![Security](https://img.shields.io/badge/Security-Advanced-red)
+
+A full-stack authentication and account security platform built with **React, Node.js, Express, MongoDB, and JWT**.
+
+This project goes beyond basic authentication by implementing **multi-device session management, brute-force protection, risk-based login detection, geo-location monitoring, suspicious login alerts, and advanced account security controls** commonly found in production-grade applications.
+
+---
+
+# 🚀 Highlights
+
+* JWT Authentication with Refresh Token Rotation
+* Email Verification System
+* Password Reset via Email
+* Brute Force Protection & Account Lockout
+* Multi-Device Session Management
+* Active Session Monitoring Dashboard
+* Individual Device Revocation
+* Revoke All Sessions
+* Browser & Operating System Detection
+* IP & Location Tracking
+* Risk-Based Login Detection
+* Suspicious Login Alerts
+* Impossible Travel Detection
+* Security Monitoring Dashboard
+
+---
+
+# 🛡️ Security Features
+
+## Authentication
+
+* Secure User Registration
+* User Login & Logout
+* JWT Access Tokens
+* Refresh Token Rotation
+* Protected Routes
+* Session-Based Authentication
+
+## Account Protection
+
+* Password Hashing with bcrypt
+* Account Lockout After Multiple Failed Attempts
+* Failed Login Tracking
+* Email Verification
+* Password Reset Workflow
+* Secure Environment Variables
+
+## Session Management
+
+* Multi-Device Login Support
+* Session Persistence
+* Session Expiration Handling
+* Active Session Tracking
+* Individual Device Revocation
+* Revoke All Sessions
+* Session-Aware JWT Validation
+
+## Device Intelligence
+
+* Browser Detection
+* Operating System Detection
+* Device Tracking
+* IP Address Monitoring
+* Login Location Tracking
+* New Device Detection
+
+## Risk Monitoring
+
+* Risk Score Calculation
+* Suspicious Login Detection
+* Impossible Travel Detection
+* Security Alert Emails
+* Session Activity Monitoring
+
+---
+
+# 🧠 How It Works
+
+```text
+User Login
+    │
+    ▼
+Capture:
+- IP Address
+- Browser
+- Device
+- Location
+    │
+    ▼
+Compare With Previous Sessions
+    │
+    ▼
+Calculate Risk Score
+    │
+    ├── New Device
+    ├── New IP
+    ├── Country Change
+    └── Travel Analysis
+    │
+    ▼
+Determine Risk Level
+    │
+    ├── Low Risk → Login
+    ├── Medium Risk → Alert
+    └── High Risk → Security Alert
+    │
+    ▼
+Create Session
+    │
+    ▼
+Issue JWT Tokens
+```
+
+---
+
+# 📱 Session Management Flow
+
+```text
+Login From Device
+      │
+      ▼
+Create Session
+      │
+      ▼
+Store:
+- Device
+- Browser
+- OS
+- IP
+- Location
+      │
+      ▼
+Display In Dashboard
+      │
+      ├── Revoke Device
+      └── Revoke All Sessions
+```
+
+---
+
+# 📡 API Endpoints
+
+## Authentication
+
+| Method | Endpoint              | Description            |
+| ------ | --------------------- | ---------------------- |
+| POST   | /auth/register        | Register User          |
+| POST   | /auth/login           | Login User             |
+| POST   | /auth/verify-email    | Verify Email           |
+| POST   | /auth/forgot-password | Request Password Reset |
+| POST   | /auth/reset-password  | Reset Password         |
+| POST   | /auth/refresh         | Refresh Access Token   |
+| POST   | /auth/logout          | Logout Current Session |
+
+---
+
+## Session Management
+
+| Method | Endpoint            | Description            |
+| ------ | ------------------- | ---------------------- |
+| GET    | /auth/sessions      | Get Active Sessions    |
+| POST   | /auth/logout-device | Revoke Specific Device |
+| POST   | /auth/logout-all    | Revoke All Sessions    |
+
+---
+
+## Protected Routes
+
+| Method | Endpoint        | Description         |
+| ------ | --------------- | ------------------- |
+| GET    | /auth/dashboard | Protected Dashboard |
+
+---
+
+# 🧪 Security Test Cases
+
+| Scenario               | Expected Result  |
+| ---------------------- | ---------------- |
+| Same Device + Same IP  | Low Risk         |
+| New Device             | Medium Risk      |
+| New IP Address         | Medium Risk      |
+| New Country            | High Risk        |
+| Multiple Failed Logins | Account Lock     |
+| Revoked Session        | 401 Unauthorized |
+| Impossible Travel      | Security Alert   |
+
+---
+
+# 📷 Screenshots
+
+## User Registration
+
+![Register](./secure-auth-system/screenshots/User-registration.png)
+
+## User Login
+
+![Login](./secure-auth-system/screenshots/User-Login.png)
+
+## Brute Force Protection
+
+![Rate Limit](./secure-auth-system/screenshots/Rate-Limiter.png)
+
+## Security Dashboard
+
+![User-registration_UI](./secure-auth-system/screenshots/User-registration_UI.png)
+
+<!-- ## Session Management
+
+*Add session management screenshot here* -->
+
+---
+
+# ⚙️ Tech Stack
+
+## Frontend
+
+* React
+* React Router DOM
+* Axios
+* Tailwind CSS
+* Lucide React
+* Stitch AI (UI Design & Prototyping)
+
+## Backend
+
+* Node.js
+* Express.js
+* JWT
+* bcrypt
+* cookie-parser
+
+## Database
+
+* MongoDB
+* Mongoose
+
+## Security & Utilities
+
+* Nodemailer
+* Crypto
+* UA Parser JS
+
+---
+# 🎨 Frontend Design
+
+The frontend interface was initially designed and prototyped using Stitch AI to accelerate UI development and layout planning.
+
+The authentication workflows, dashboard integration, API communication, session management features, and security-related functionality were subsequently integrated, customized, and extended within the React application.
+---
+# 📁 Project Structure
+
+```text
+secure-auth-system/
+│
+├── secure-auth-frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── middleware/
+│   └── authMiddleware.js
+│
+├── models/
+│   ├── User.js
+│   └── BlacklistToken.js
+│
+├── routes/
+│   └── auth.js
+│
+├── utils/
+│   ├── geoService.js
+│   ├── sendEmail.js
+│   └── tokenUtils.js
+│
+├── screenshots/
+├── .env
+├── index.js
+└── package.json
+```
+
+---
+
+# ⚙️ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection.git
+```
+
+## Backend Setup
+
+```bash
+npm install
+npm start
+```
+
+## Frontend Setup
+
+```bash
+cd secure-auth-frontend
+
+npm install
+
+npm start
+```
+
+---
+
+# 🔑 Environment Variables
+
+## Backend (.env)
+
+```env
+PORT=3000
+
+MONGO_URI=your_mongodb_connection_string
+
+JWT_SECRET=your_jwt_secret
+
+CLIENT_URL=http://localhost:3001
+
+EMAIL_USER=your_email
+
+EMAIL_PASS=your_email_password
+```
+
+## Frontend (.env)
+
+```env
+REACT_APP_API_URL=http://localhost:3000
+```
+
+---
+
+# 🚀 Future Improvements
+
+* Two-Factor Authentication (2FA)
+* Google OAuth Authentication
+* GitHub OAuth Authentication
+* Security Audit Logs
+* Admin Monitoring Dashboard
+* Device Fingerprinting
+* Adaptive Authentication Policies
+
+---
+
+# 🏆 Resume Highlight
+
+Built a production-grade authentication and session management platform using React, Node.js, Express, MongoDB, and JWT. Implemented multi-device session management, brute-force protection, account lockout mechanisms, email verification, password reset workflows, risk-based login detection, geo-location monitoring, suspicious login alerts, and advanced session revocation controls.
+
+---
+
+# 🙌 Acknowledgements
+
+- Stitch AI for assisting with UI design and layout prototyping.
+- React, Express, MongoDB, and other open-source tools used throughout development.
+
+---
+
+# 👨‍💻 Author
+
+**Vansh Mathur**
+
+Cybersecurity-focused authentication project demonstrating secure authentication workflows, device-aware session management, risk-based login monitoring, and modern account protection mechanisms.
+
+---

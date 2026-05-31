@@ -59,10 +59,10 @@ const sendEmail = async (to, subject, text) => {
       text
     });
 
-    console.log("📧 Email sent successfully");
+    console.log("Email sent successfully");
 
   } catch (err) {
-    console.log("❌ Email error:", err);
+    console.log("Email error:", err);
   }
 };
 

@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-exports.generateAccessToken = (user) => {
+exports.generateAccessToken = (user, sessionId) => {
   return jwt.sign(
-    { id: user._id },
+    { 
+      id: user._id,
+      sessionId: sessionId  // Link token to session
+    },
     process.env.JWT_SECRET,
     { expiresIn: "15m" }
   );

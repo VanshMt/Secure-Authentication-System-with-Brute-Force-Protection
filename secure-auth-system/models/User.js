@@ -76,11 +76,11 @@ const UserSchema = new mongoose.Schema({
   failedAttempts: {
     type: Number,
     default: 0
-},
+  },
   lockUntil: {
     type: Date,
     default: null
-},
+  },
   resetToken: {
     type: String
   },
@@ -107,6 +107,8 @@ const UserSchema = new mongoose.Schema({
   {
     tokenHash: String,
     device: String,
+    browser: String,
+    os: String,
     ip: String,
 
     location: {

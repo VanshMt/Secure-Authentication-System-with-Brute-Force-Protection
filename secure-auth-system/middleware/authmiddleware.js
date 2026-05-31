@@ -86,6 +86,8 @@
 
 const jwt = require("jsonwebtoken");
 const BlacklistToken = require("../models/BlacklistToken");
+const User = require("../models/User");  // For session validation
+
 
 module.exports = async function (req, res, next) {
   const authHeader = req.header("Authorization");
@@ -98,7 +100,7 @@ module.exports = async function (req, res, next) {
     // Extract token
     const token = authHeader.split(" ")[1];
 
-    // 🔥 CHECK BLACKLIST FIRST
+    // Check blacklist first
     const isBlacklisted = await BlacklistToken.findOne({ token });
 
     if (isBlacklisted) {
@@ -108,6 +110,20 @@ module.exports = async function (req, res, next) {
     // Verify token
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
+
+    // Verify session still exists
+    const user = await User.findById(verified.id);
+    if (!user) {
+      return res.status(401).json({ msg: "User not found" });
+    }
+
+    const sessionExists = user.sessions.some(
+      s => s._id.toString() === verified.sessionId
+    );
+
+    if (!sessionExists) {
+      return res.status(401).json({ msg: "Session expired or revoked" });
+    }
 
     next();
 

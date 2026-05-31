@@ -929,7 +929,8 @@ const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const BlacklistToken = require("../models/BlacklistToken");
 const { getLocationFromIP } = require("../utils/geoService");
-// ✅ NEW: Token utils
+const UAParser = require("ua-parser-js");
+// Token generation utilities
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -1082,7 +1083,8 @@ router.post("/login", async (req, res) => {
 
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res.status(403).json({
-        msg: "Account locked. Try again later."
+        msg: "Account locked. Try again later.",
+        lockUntil: user.lockUntil
       });
     }
 
@@ -1109,11 +1111,10 @@ router.post("/login", async (req, res) => {
             { $inc: { failedAttempts: 1 } }
           );
 
-          // get updated user
+          // Get updated user
           const updatedUser = await User.findById(user._id);
-          console.log("FAILED ATTEMPTS:", updatedUser.failedAttempts);
 
-          // lock logic
+          // Lock logic
           if (updatedUser.failedAttempts >= 5) {
                     await User.updateOne(
             { _id: user._id },
@@ -1126,14 +1127,15 @@ router.post("/login", async (req, res) => {
 
           await sendEmail(
             user.email,
-            "🚨 Security Alert",
+            "Security Alert",
             "Your account has been locked due to multiple failed login attempts."
           );
 
-          console.log("ACCOUNT LOCKED 🚨");
+          const lockUntil = Date.now() + 5 * 60 * 1000;
 
           return res.status(403).json({
-            msg: "Account locked due to too many attempts"
+            msg: "Account locked due to too many attempts",
+            lockUntil: lockUntil
           });
         }
 
@@ -1142,59 +1144,49 @@ router.post("/login", async (req, res) => {
 
     }
 
-    // ✅ RESET ON SUCCESS
-    await user.updateOne({
-      $set: {
-         failedAttempts: 0,
-         lockUntil: null
-      }
-    });
-    // 🔥 TOKEN GENERATION
-    const accessToken = generateAccessToken(user);
+    // Login successful - reset failed attempts
+    user.failedAttempts = 0;
+    user.lockUntil = null;
+    // Token generation - create refresh token first
     const refreshToken = generateRefreshToken();
     const hashed = hashToken(refreshToken);
 
-    // 🧹 CLEAN EXPIRED SESSIONS
+    // Filter out expired sessions
     user.sessions = user.sessions.filter(
       s => s.expiresAt > Date.now()
     );
 
-    // 🔒 LIMIT MAX 3 DEVICES
+    // Limit sessions to maximum of 3
     while (user.sessions.length >= 3) {
       user.sessions.shift();
     }
 
-    // const userAgent = req.headers["user-agent"] || "Unknown Device";
-    // const ip = req.ip || "Unknown IP";.
-    //For better accuracy, especially behind proxies, we can check x-forwarded-for header
-    // const ip =
-    //   req.headers["x-forwarded-for"]?.split(",")[0] ||
-    //   req.socket.remoteAddress ||
-    //   "Unknown IP";
-    // const ip =
-    //  req.headers["x-forwarded-for"] ||
-    // "8.8.8.8"; // 👈 FORCE REAL IP FOR TEST
-    // const location = await getLocationFromIP(ip);
-    // console.log("LOCATION 👉", location);
-
-// 📱 Device
+    // Device parsing
     const userAgent = req.headers["user-agent"] || "Unknown Device";
+    const parser = new UAParser(userAgent);
+    const browserName = parser.getBrowser().name || "Unknown";
+    const browserVersion = parser.getBrowser().version || "";
+    const osName = parser.getOS().name || "Unknown";
+    const osVersion = parser.getOS().version || "";
+    
+    const displayBrowser = browserVersion ? `${browserName} ${browserVersion}` : browserName;
+    const displayOS = osVersion ? `${osName} ${osVersion}` : osName;
 
-    // 🌍 Get real IP
+    // �🌍 Get real IP
     let ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress ||
       "Unknown IP";
 
-    // 🔥 Clean IPv6 format (::ffff:127.0.0.1 → 127.0.0.1)
+    // Clean IPv6 format
     if (ip?.includes("::ffff:")) {
       ip = ip.split("::ffff:")[1];
     }
 
-    // 🌍 Get location
+    // Get location from IP
     const location = await getLocationFromIP(ip);
 
-    // 🚨 RISK SCORING STARTS HERE
+    // Calculate risk score
     let risk = 0;
 
     // 📱 New device check
@@ -1206,9 +1198,9 @@ router.post("/login", async (req, res) => {
       risk += 30;
     }
 
-    // 🌍 Country change check
+    // Check for country changes
     const lastSession = user.sessions[user.sessions.length - 1];
-    // ✈️ IMPOSSIBLE TRAVEL DETECTION
+    // Detect impossible travel - same user in different countries within 1 hour
     if (lastSession && lastSession.location) {
       const prevTime = new Date(lastSession.createdAt).getTime();
       const currentTime = Date.now();
@@ -1224,13 +1216,11 @@ router.post("/login", async (req, res) => {
         prevCountry !== currentCountry &&
         timeDiffMinutes < 60 // within 1 hour
       ) {
-        console.log("🚨 IMPOSSIBLE TRAVEL DETECTED");
-
         risk += 70;
 
         await sendEmail(
           user.email,
-          "🚨 Impossible Travel Detected",
+          "Impossible Travel Detected",
           `We detected a suspicious login:
 
           Previous Location: ${prevCountry}
@@ -1249,7 +1239,7 @@ router.post("/login", async (req, res) => {
       risk += 50;
     }
 
-    // 🌐 New IP check
+    // Check for new IP
     const knownIP = user.sessions.find(
       s => s.ip === ip
     );
@@ -1258,12 +1248,11 @@ router.post("/login", async (req, res) => {
       risk += 20;
     }
 
-    console.log("RISK SCORE 👉", risk);
-    // 🚨 RISK SCORING ENDS HERE
-        if (risk >= 70) {
+    // Risk scoring complete
+    if (risk >= 70) {
       await sendEmail(
         user.email,
-        "🚨 High Risk Login Detected",
+        "High Risk Login Detected",
         `High-risk login detected:
 
         Device: ${userAgent}
@@ -1272,16 +1261,16 @@ router.post("/login", async (req, res) => {
       );
     }
 
-    // 🔍 CHECK IF SAME DEVICE EXISTS
+    // Check if device already exists
     const existingSession = user.sessions.find(
       s => s.device === userAgent && s.ip === ip
     );
 
-    // 🚨 NEW DEVICE ALERT
+    // Send alert for new device
     if (!existingSession) {
       await sendEmail(
         user.email,
-        "⚠️ New Login Detected",
+        "New Login Detected",
         `New login detected:
 
         Device: ${userAgent}
@@ -1292,7 +1281,7 @@ router.post("/login", async (req, res) => {
       );
     }
 
-    // 🚨 SUSPICIOUS LOGIN (IP CHANGE)
+    // Check for suspicious login from different IP
     const suspicious = user.sessions.find(
       s => s.ip !== ip
     );
@@ -1300,7 +1289,7 @@ router.post("/login", async (req, res) => {
     if (suspicious) {
       await sendEmail(
         user.email,
-        "🚨 Suspicious Login Detected",
+        "Suspicious Login Detected",
         `Login from a different IP detected:
 
         New IP: ${ip}
@@ -1325,25 +1314,48 @@ router.post("/login", async (req, res) => {
 
     // await user.save();
 
-      await User.updateOne(
-        { _id: user._id },
-        {
-          $push: {
-            sessions: {
-              tokenHash: hashed,
-              device: userAgent,
-              ip: ip,
-              location: {
-                country: location.country,
-                region: location.region
-              },
-              expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
-            }
-          }
-        }
-      );
+      // await User.updateOne(
+      //   { _id: user._id },
+      //   {
+      //     $push: {
+      //       sessions: {
+      //         tokenHash: hashed,
+      //         device: userAgent,
+      //         browser: displayBrowser,
+      //         os: displayOS,
+      //         ip: ip,
+      //         location: {
+      //           country: location.country,
+      //           region: location.region
+      //         },
+      //         expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+      //       }
+      //     }
+      //   }
+      // );
 
-    // 🍪 SEND REFRESH TOKEN
+      // ✅ SAVE NEW SESSION
+        user.sessions.push({
+          tokenHash: hashed,
+          device: userAgent,
+          browser: displayBrowser,
+          os: displayOS,
+          ip: ip,
+          location: {
+            country: location.country,
+            region: location.region
+          },
+          expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+        });
+
+        // 💾 SAVE EVERYTHING
+        await user.save();
+
+        // ✅ Generate access token WITH sessionId (must be after save so session has _id)
+        const sessionId = user.sessions[user.sessions.length - 1]._id;
+        const accessToken = generateAccessToken(user, sessionId);
+
+    // Set refresh token in cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
@@ -1351,14 +1363,18 @@ router.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    // 📤 SEND ACCESS TOKEN
+    // Return access token
     res.json({ accessToken });
 
-  } catch (err) {
-    console.log("LOGIN ERROR 👉", err);
-    res.status(500).json({ msg: "Login error" });
-  }
+} catch (err) {
+  console.log("LOGIN ERROR 👉", err);
+
+  res.status(500).json({
+    msg: "Server error"
+  });
+}
 });
+
 
 
 // ================= REFRESH TOKEN =================
@@ -1373,28 +1389,25 @@ router.post("/refresh", async (req, res) => {
     const hashed = hashToken(token);
 
     const user = await User.findOne({
-      "refreshTokens.tokenHash": hashed,
-      "refreshTokens.expiresAt": { $gt: Date.now() }
+      "sessions.tokenHash": hashed,
+      "sessions.expiresAt": { $gt: Date.now() }
     });
 
     if (!user) {
       return res.status(403).json({ msg: "Invalid refresh token" });
     }
 
-    // const newAccessToken = generateAccessToken(user);
+    // ✅ Find the session that needs refresh (before any filtering)
+    const sessionIndex = user.sessions.findIndex(s => s.tokenHash === hashed);
+    if (sessionIndex === -1) {
+      return res.status(403).json({ msg: "Session expired or revoked" });
+    }
 
-    // res.json({ accessToken: newAccessToken });
-
-    // ❌ REMOVE OLD TOKEN (rotation)
-// user.refreshTokens = user.refreshTokens.filter(
-//   t => t.tokenHash !== hashed
-
-  user.sessions = user.sessions.filter(
-    s => s.tokenHash !== hashed
-);
+    // ✅ Get sessionId from existing session
+    const sessionId = user.sessions[sessionIndex]._id;
 
 // 🔁 GENERATE NEW TOKENS
-const newAccessToken = generateAccessToken(user);
+const newAccessToken = generateAccessToken(user, sessionId);
 const newRefreshToken = generateRefreshToken();
 
 const newHashed = hashToken(newRefreshToken);
@@ -1405,15 +1418,21 @@ const newHashed = hashToken(newRefreshToken);
 //   expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
 // });
 
-const userAgent = req.headers["user-agent"] || "Unknown Device";
+// const userAgent = req.headers["user-agent"] || "Unknown Device";
+const userAgent = req.headers["user-agent"] || "";
+const parser = new UAParser(userAgent);
+const browserName = parser.getBrowser().name || "Unknown";
+const browserVersion = parser.getBrowser().version || "";
+const osName = parser.getOS().name || "Unknown";
+const osVersion = parser.getOS().version || "";
+
+const displayBrowser = browserVersion ? `${browserName} ${browserVersion}` : browserName;
+const displayOS = osVersion ? `${osName} ${osVersion}` : osName;
 const ip = req.ip || "Unknown IP";
 
-user.sessions.push({
-  tokenHash: newHashed,
-  device: userAgent,
-  ip: ip,
-  expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
-});
+// ✅ UPDATE existing session (rotate token while preserving session _id)
+user.sessions[sessionIndex].tokenHash = newHashed;
+user.sessions[sessionIndex].expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
 
 await user.save();
 
@@ -1625,10 +1644,17 @@ router.get("/sessions", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
-    const sessions = user.sessions.map(s => ({
+    // ✅ Filter out expired sessions
+    const activeSessions = user.sessions.filter(s => s.expiresAt > Date.now());
+
+    const sessions = activeSessions.map(s => ({
       id: s._id,
       device: s.device,
+      browser: s.browser || "Unknown",
+      os: s.os || "Unknown",
       ip: s.ip,
+      location: s.location || { country: "Unknown", region: "Unknown" },
+      lastActive: s.lastActive,
       createdAt: s.createdAt,
       expiresAt: s.expiresAt
     }));
@@ -1658,6 +1684,32 @@ router.post("/logout-device", authMiddleware, async (req, res) => {
     res.status(500).json({ msg: "Error logging out device" });
   }
 });
+
+
+// ================= LOGOUT ALL DEVICES =================
+router.post("/logout-all", authMiddleware, async (req, res) => {
+  try {
+
+    await User.updateOne(
+      { _id: req.user.id },
+      { $set: { sessions: [] } }
+    );
+
+    res.clearCookie("refreshToken");
+
+    res.json({
+      msg: "All devices logged out successfully"
+    });
+
+  } catch (err) {
+    console.log("LOGOUT ALL ERROR 👉", err);
+
+    res.status(500).json({
+      msg: "Error logging out all devices"
+    });
+  }
+});
+
 
 // ================= PROTECTED =================
 router.get("/dashboard", authMiddleware, (req, res) => {

@@ -49,9 +49,15 @@ const cors = require("cors");
 const app = express();
 app.set("trust proxy", 1); // For rate limiter to work behind proxies
 
+// app.use(cors({
+//   //origin: ["http://localhost:3001", "http://localhost:3000", "http://192.168.1.7:3001", "http://192.168.1.7:3000"],
+//   origin:[ process.env.CLIENT_URL, "http://localhost:3001", "http://localhost:3000"],
+//   // methods: ["GET", "POST", "PUT", "DELETE"],
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: "http://localhost:3001",
-  // methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: true,
   credentials: true
 }));
 
@@ -64,8 +70,16 @@ app.use(cookieParser());
 // RATE LIMITER (Brute force protection)
 const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50, // max 5 attempts
-  message: "Too many login attempts. Try again later."
+  max: 5, // max 5 attempts
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res) => {
+    const lockUntil = Date.now() + 1 * 60 * 1000; // Lock for 1 minute
+    res.status(429).json({
+      msg: "Too many login attempts. Try again later.",
+      lockUntil,
+    });
+  }
 });
 
 // Apply limiter ONLY to login
@@ -77,16 +91,16 @@ app.use("/auth", authRoutes);
 
 // Connect DB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected ✅"))
+  .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Server running 🚀");
+  res.send("Server running");
 });
 
 // Start server
-app.listen(3000, () => {
+app.listen(3000, "0.0.0.0", () => {
   console.log("Server started on port 3000");
 });
 
