@@ -67,15 +67,15 @@ node index.js
 
 ### 🧾 User Registration
 
-![Register](./screenshots/User-registration.png)
+![Register](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/User-registration.png)
 
 ### 🔐 User Login (JWT Token)
 
-![Login](./screenshots/User-Login.png)
+![Login](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/User-Login.png)
 
 ### 🛡️ Brute Force Protection
 
-![Rate Limit](./screenshots/Rate-Limiter.png) -->
+![Rate Limit](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/Rate-Limiter.png) -->
 
 <!-- # 🔐 Secure Authentication System with Brute Force Protection
 
@@ -824,19 +824,19 @@ Display In Dashboard
 
 ## User Registration
 
-![Register](./secure-auth-system/screenshots/User-registration.png)
+![Register](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/User-registration.png)
 
 ## User Login
 
-![Login](./secure-auth-system/screenshots/User-Login.png)
+![Login](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/User-Login.png)
 
 ## Brute Force Protection
 
-![Rate Limit](./secure-auth-system/screenshots/Rate-Limiter.png)
+![Rate Limit](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/Rate-Limiter.png)
 
 ## Security Dashboard
 
-![User-registration_UI](./secure-auth-system/screenshots/User-registration_UI.png)
+![User-registration_UI](https://github.com/VanshMt/Secure-Authentication-System-with-Brute-Force-Protection/blob/master/User-registration_UI.png)
 
 <!-- ## Session Management
 
