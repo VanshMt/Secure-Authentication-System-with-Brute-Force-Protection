@@ -111,20 +111,34 @@ module.exports = async function (req, res, next) {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
 
+    console.log("JWT payload:", verified);
+    console.log("SessionId from token:", verified.sessionId);
+
     // Verify session still exists
     const user = await User.findById(verified.id);
     if (!user) {
       return res.status(401).json({ msg: "User not found" });
     }
 
+    console.log(
+      "User sessions:",
+      user.sessions.map((s) => s._id.toString())
+    );
+
     const sessionExists = user.sessions.some(
       s => s._id.toString() === verified.sessionId
     );
 
+    console.log("Session exists:", sessionExists);
+
     if (!sessionExists) {
+      // return res.status(401).json({ msg: "Session expired or revoked" });
+      console.log("Returning 401 - session revoked");
       return res.status(401).json({ msg: "Session expired or revoked" });
     }
 
+    console.log("Middleware completed successfully");
+    // next();
     next();
 
   } catch (err) {

@@ -13,12 +13,32 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [dashboardData, setDashboardData] = useState({
+    activeSessions: 0,
+    failedAttempts: 0,
+    lastLoginAt: null,
+    accountStatus: "Secure",
+  });
+
   useEffect(() => {
     const fetchSessions = async () => {
       try {
         setLoading(true);
         setError("");
-        const res = await API.get("/auth/sessions");
+        // const res = await API.get("/auth/sessions");
+        
+        const [sessionsRes, dashboardRes] = await Promise.all([
+          API.get("/auth/sessions"),
+          API.get("/auth/dashboard"),
+        ]);
+        const res = sessionsRes;
+
+        setDashboardData({
+          activeSessions: dashboardRes.data.activeSessions || 0,
+          failedAttempts: dashboardRes.data.failedAttempts || 0,
+          lastLoginAt: dashboardRes.data.lastLoginAt || null,
+          accountStatus: dashboardRes.data.accountStatus || "Secure",
+        });
         
         // Map backend session data to frontend format
         const formattedSessions = (res.data.sessions || []).map((session) => ({
@@ -35,6 +55,7 @@ const Dashboard = () => {
         
         setSessions(formattedSessions);
       } catch (err) {
+        console.log("Dashboard fetch error:", err.response?.status);
         // 401 errors are handled by API interceptor, so this catch is for other errors
         if (err.response?.status === 401) {
           // Interceptor should have already redirected, but if not, do it here
@@ -53,10 +74,11 @@ const Dashboard = () => {
     fetchSessions();
   }, [navigate]);
 
-  const activeSessions = sessions.length;
-  const failedLogins = sessions.reduce((total, session) => total + (session.failedAttempts || 0), 0);
-  const currentSession = sessions.find((session) => session.current) || sessions[0];
-  const accountStatus = "Secure";
+  const activeSessions = dashboardData.activeSessions;
+  const failedLogins = dashboardData.failedAttempts;
+  // const currentSession = sessions.find((session) => session.current) || sessions[0];
+  const accountStatus = dashboardData.accountStatus || "Secure";
+  const lastLoginAt = dashboardData.lastLoginAt || null;
 
   const stats = useMemo(
     () => [
@@ -79,7 +101,10 @@ const Dashboard = () => {
       {
         icon: "Clock",
         label: "Last Login",
-        value: currentSession?.lastActive || "N/A",
+        // value: lastLogin || "N/A",
+        value: lastLoginAt
+          ? new Date(lastLoginAt).toLocaleString()
+          : "Never",
         delta: "LIVE",
         progressClass: "bg-slate-500",
         progressWidth: "75%",
@@ -93,10 +118,25 @@ const Dashboard = () => {
         progressWidth: "100%",
       },
     ],
-    [activeSessions, failedLogins, currentSession, accountStatus]
+    [activeSessions, 
+      failedLogins, 
+      /* currentSession, */
+      accountStatus, 
+      lastLoginAt
+    ]
   );
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await API.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+
+    // Old logout flow
+    // localStorage.removeItem("token");
+    // navigate("/login");
+
     localStorage.removeItem("token");
     navigate("/login");
   };

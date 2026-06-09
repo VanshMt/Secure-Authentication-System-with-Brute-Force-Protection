@@ -81,6 +81,16 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+
+  // lastLoginAt must exist at the user level so the dashboard can show the
+  // user's most recent successful login across all sessions.
+  // Storing this timestamp inside a session object is incorrect because the
+  // dashboard metric is global to the user, not tied to one specific session.
+  lastLoginAt: {
+    type: Date,
+    default: null
+  },
+
   resetToken: {
     type: String
   },
@@ -121,9 +131,8 @@ const UserSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     },
-    expiresAt: Date
+    expiresAt: Date,
   }],
-
 
 });
 

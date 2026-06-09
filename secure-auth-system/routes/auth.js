@@ -1147,6 +1147,8 @@ router.post("/login", async (req, res) => {
     // Login successful - reset failed attempts
     user.failedAttempts = 0;
     user.lockUntil = null;
+    // user.lastLogin = new Date(); // legacy field name kept for reference
+    user.lastLoginAt = new Date();
     // Token generation - create refresh token first
     const refreshToken = generateRefreshToken();
     const hashed = hashToken(refreshToken);
@@ -1184,6 +1186,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Get location from IP
+    console.log("IP Detected:", ip);
     const location = await getLocationFromIP(ip);
 
     // Calculate risk score
@@ -1712,8 +1715,34 @@ router.post("/logout-all", authMiddleware, async (req, res) => {
 
 
 // ================= PROTECTED =================
-router.get("/dashboard", authMiddleware, (req, res) => {
-  res.json({ msg: "Welcome to dashboard 🔐", user: req.user });
+router.get("/dashboard", authMiddleware, async (req, res) => {
+  try{
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    let accountStatus = "Secure";
+
+    if (user.lockUntil && user.lockUntil > Date.now()) {
+      accountStatus = "Locked";
+    } else if (user.failedAttempts > 0) {
+      accountStatus = "Warning";
+    }
+
+  res.json({
+    activeSessions: user.sessions.length,
+    failedAttempts: user.failedAttempts,
+    lastLoginAt: user.lastLoginAt,
+    accountStatus
+  });
+} catch (err) {
+  console.log("DASHBOARD ERROR 👉", err);
+  res.status(500).json({ msg: "Error fetching dashboard data" });
+}
+
+  // res.json({ msg: "Welcome to dashboard 🔐", user: req.user });
 });
 
 module.exports = router;

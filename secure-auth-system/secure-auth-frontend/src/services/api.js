@@ -20,11 +20,20 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log("Interceptor hit");
+    console.log("Interceptor status:", error.response?.status);
+    console.log("Response status:", error.response?.status);
     if (error.response?.status === 401) {
       // Clear auth token
       localStorage.removeItem("token");
       // Redirect to login
-      window.location.href = "/login";
+      console.log("Redirecting to login");
+      console.log("Current URL:", window.location.href);
+      console.log("Attempting redirect...");
+      // window.location.href = "/login";
+      console.log("Current URL:", window.location.href);
+      console.log("Using window.location.replace");
+      window.location.replace("/login");
     }
     return Promise.reject(error);
   }
