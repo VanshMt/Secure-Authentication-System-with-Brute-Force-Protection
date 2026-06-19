@@ -36,6 +36,7 @@ const useSessionPolling = (intervalSeconds = 5) => {
 
     // Check immediately and then at interval
     checkSession();
+
     const interval = setInterval(checkSession, intervalSeconds * 1000);
 
     // Cleanup interval on unmount

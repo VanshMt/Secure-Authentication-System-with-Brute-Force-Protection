@@ -20,6 +20,9 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log("API Error Status:", error.response?.status);
+    console.log("API URL:", error.config?.url);
+    console.log("Token Before Removal:", localStorage.getItem("token"));
     console.log("Interceptor hit");
     console.log("Interceptor status:", error.response?.status);
     console.log("Response status:", error.response?.status);
@@ -27,6 +30,8 @@ API.interceptors.response.use(
       // Clear auth token
       localStorage.removeItem("token");
       // Redirect to login
+      // Commented redirect temporarily during debug to avoid redirect loops while investigating public route access.
+      // If this causes redirect issues on public pages, we can re-enable after confirming only protected routes call this.
       console.log("Redirecting to login");
       console.log("Current URL:", window.location.href);
       console.log("Attempting redirect...");
